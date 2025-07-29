@@ -75,8 +75,6 @@ flight-demand-analyzer/
 4. responsive Analysis Result:
    ![Analysis Screenshot](Screenshot/5.png)
 
-*(Optional: Take screenshots and save them in a `screenshots` folder)*
-
 ---
 
 ## **Future Improvements**
