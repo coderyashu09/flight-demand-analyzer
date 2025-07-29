@@ -1,2 +1,18 @@
-# flight-demand-analyzer
-Analyze airline market demand between airports with interactive charts and key insights. Currently uses simulated random flight data for demonstration, but can easily connect to real APIs (e.g., AviationStack, OpenSky Network) for live flight statistics.
+# Airline Market Demand Dashboard
+
+A Python + Flask web app to analyze airline booking market demand.  
+Currently uses simulated random data but supports real API integration (e.g., AviationStack) for future expansion.
+
+## Features
+- Simulates flight demand analysis between origin and destination airports
+- Generates key insights like:
+  - Total annual flights
+  - Peak travel months
+  - Best time to book
+- Interactive bar chart visualization using Chart.js
+- Ready for real-world API integration
+
+## Installation
+1. Clone the repository:
+   ```bash
+   git clone https://github.com/<your-username>/airline-market-demand-dashboard.git
