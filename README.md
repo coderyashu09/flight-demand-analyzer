@@ -1,4 +1,4 @@
-# Airline Market Demand Dashboard
+# Flight Demand Analyzer
 
 A Python + Flask web app to analyze airline booking market demand.  
 Currently uses simulated random data but supports real API integration (e.g., AviationStack) for future expansion.
@@ -15,4 +15,4 @@ Currently uses simulated random data but supports real API integration (e.g., Av
 ## Installation
 1. Clone the repository:
    ```bash
-   git clone https://github.com/<your-username>/airline-market-demand-dashboard.git
+   git clone https://github.com/coderyashu09/flight-demand-analyzer.git
