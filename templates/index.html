@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Flight Demand Analyzer</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        .card {
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+        }
+        #demandChart {
+            max-height: 400px;
+        }
+        .insight-item {
+            position: relative;
+            padding-left: 1.5rem;
+            margin-bottom: 0.75rem;
+        }
+        .insight-item:before {
+            content: "";
+            position: absolute;
+            left: 0;
+            top: 0.5rem;
+            width: 0.75rem;
+            height: 0.75rem;
+            background-color: #6366f1;
+            border-radius: 50%;
+        }
+    </style>
+</head>
+<body class="bg-gray-50">
+    <div class="container py-8 px-4 mx-auto">
+        <!-- Header Section -->
+        <header class="text-center mb-10">
+            <h1 class="text-4xl font-bold text-indigo-700 mb-3">✈️ Flight Demand Analyzer</h1>
+            <p class="text-lg text-gray-600 max-w-2xl mx-auto">
+                Analyze flight demand patterns between airports to optimize your travel planning or business decisions.
+            </p>
+        </header>
+
+        <!-- Main Content -->
+        <div class="row g-4">
+            <!-- Form Section -->
+            <div class="col-lg-6">
+                <div class="card p-5 h-full bg-white rounded-xl shadow-sm">
+                    <h2 class="text-2xl font-semibold text-gray-800 mb-5">Enter Flight Details</h2>
+                    <form id="flightForm">
+                        <div class="mb-4">
+                            <label for="origin" class="form-label text-gray-700 font-medium">Origin Airport Code</label>
+                            <input type="text" class="form-control p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-200" 
+                                   id="origin" placeholder="e.g., JFK" required maxlength="3">
+                        </div>
+                        <div class="mb-5">
+                            <label for="destination" class="form-label text-gray-700 font-medium">Destination Airport Code</label>
+                            <input type="text" class="form-control p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-200" 
+                                   id="destination" placeholder="e.g., LAX" required maxlength="3">
+                        </div>
+                        <button type="submit" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-medium py-3 px-4 rounded-lg transition duration-300">
+                            Analyze Demand
+                        </button>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Insights Section -->
+            <div class="col-lg-6">
+                <div class="card p-5 h-full bg-white rounded-xl shadow-sm">
+                    <h2 class="text-2xl font-semibold text-gray-800 mb-5">Key Insights</h2>
+                    <div id="insightsContent" class="text-gray-700">
+                        <p class="text-gray-500 italic" id="defaultInsightText">
+                            Enter airport codes and click "Analyze Demand" to see insights about flight demand between your selected routes.
+                        </p>
+                        <ul class="list-none pl-0 mt-4 space-y-2" id="insightsList" style="display: none;">
+                            <!-- Insights will be populated here by JavaScript -->
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Chart Section -->
+            <div class="col-12 mt-4">
+                <div class="card p-5 bg-white rounded-xl shadow-sm">
+                    <h2 class="text-2xl font-semibold text-gray-800 mb-5">Flight Demand Analysis</h2>
+                    <div class="chart-container relative" style="height: 400px;">
+                        <canvas id="demandChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bootstrap JS Bundle with Popper -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Initialize chart with empty data
+            const ctx = document.getElementById('demandChart').getContext('2d');
+            let demandChart = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
+                    datasets: [{
+                        label: 'Flight Demand',
+                        data: [],
+                        backgroundColor: 'rgba(99, 102, 241, 0.7)',
+                        borderColor: 'rgba(99, 102, 241, 1)',
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            title: {
+                                display: true,
+                                text: 'Number of Flights'
+                            }
+                        },
+                        x: {
+                            title: {
+                                display: true,
+                                text: 'Month'
+                            }
+                        }
+                    },
+                    plugins: {
+                        legend: {
+                            position: 'top',
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    return `${context.dataset.label}: ${context.raw} flights`;
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+
+            // Form submission handler
+            document.getElementById('flightForm').addEventListener('submit', function(e) {
+                e.preventDefault();
+                
+                const origin = document.getElementById('origin').value.toUpperCase();
+                const destination = document.getElementById('destination').value.toUpperCase();
+                
+                // Simulate API call with random data
+                simulateAnalysis(origin, destination);
+            });
+
+            // Function to simulate analysis with random data
+            function simulateAnalysis(origin, destination) {
+                // Show loading state
+                const insightsList = document.getElementById('insightsList');
+                const defaultText = document.getElementById('defaultInsightText');
+                
+                defaultText.style.display = 'none';
+                insightsList.style.display = 'block';
+                insightsList.innerHTML = '<li class="text-gray-500 italic">Analyzing data... Please wait.</li>';
+                
+                // Simulate API delay
+                setTimeout(() => {
+                    // Generate random flight data for the chart
+                    const flightData = Array.from({length: 12}, () => Math.floor(Math.random() * 500) + 50);
+                    
+                    // Update chart
+                    demandChart.data.datasets[0].data = flightData;
+                    demandChart.data.datasets[0].label = `Flights from ${origin} to ${destination}`;
+                    demandChart.update();
+                    
+                    // Generate insights based on the random data
+                    const totalFlights = flightData.reduce((a, b) => a + b, 0);
+                    const peakMonthIndex = flightData.indexOf(Math.max(...flightData));
+                    const months = ['January', 'February', 'March', 'April', 'May', 'June', 
+                                   'July', 'August', 'September', 'October', 'November', 'December'];
+                    const peakMonth = months[peakMonthIndex];
+                    const avgFlights = Math.round(totalFlights / 12);
+                    
+                    // Update insights
+                    insightsList.innerHTML = `
+                        <li class="insight-item">Total annual flights: <span class="font-semibold">${totalFlights}</span></li>
+                        <li class="insight-item">Peak travel month: <span class="font-semibold">${peakMonth}</span> with ${flightData[peakMonthIndex]} flights</li>
+                        <li class="insight-item">Average monthly flights: <span class="font-semibold">${avgFlights}</span></li>
+                        <li class="insight-item">Demand is <span class="font-semibold">${flightData[peakMonthIndex] > 400 ? 'very high' : flightData[peakMonthIndex] > 300 ? 'high' : 'moderate'}</span> during peak season</li>
+                        <li class="insight-item">Best time to book: <span class="font-semibold">${months[(peakMonthIndex + 6) % 12]}</span> (6 months before peak)</li>
+                    `;
+                }, 1500);
+            }
+        });
+    </script>
+</body>
+</html>
